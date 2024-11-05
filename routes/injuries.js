@@ -41,3 +41,5 @@ router.get("/", async (req, res) => {
 router.get("/:team", getTeamInjuries);
 
 module.exports = router;
+
+//test
