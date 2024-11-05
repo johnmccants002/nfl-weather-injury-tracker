@@ -1,11 +1,10 @@
 // controllers/gameController.js
-const axios = require("axios");
 const CurrentWeek = require("../models/CurrentWeek");
 
 const getCurrentWeekSchedule = async (req, res) => {
   try {
     const apiUrl = `https://api.sportradar.com/nfl/official/trial/v7/en/games/current_week/schedule.json?api_key=${process.env.NFL_API_KEY}`;
-    const response = await axios.get(apiUrl);
+    const response = await fetch(apiUrl);
 
     const weekData = response.data.week;
     const { sequence, title } = weekData;
@@ -43,7 +42,7 @@ const getNextWeekSchedule = async (req, res) => {
     const apiUrl = `https://api.sportradar.com/nfl/official/trial/v7/${locale}/games/${year}/${seasonType}/${nextWeekNumber}/schedule.json?api_key=${process.env.NFL_API_KEY}`;
 
     // Fetch the next week's schedule from Sportradar
-    const response = await axios.get(apiUrl);
+    const response = await fetch(apiUrl);
 
     // Return the data for the next week
     res.json(response.data);
