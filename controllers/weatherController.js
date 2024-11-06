@@ -19,4 +19,6 @@ const getWeather = async (req, res) => {
   }
 };
 
+//test
+
 module.exports = { getWeather };
