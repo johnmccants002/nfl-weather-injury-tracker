@@ -1,14 +1,20 @@
-// controllers/gameController.js
 const CurrentWeek = require("../models/CurrentWeek");
 
 const getCurrentWeekSchedule = async (req, res) => {
   try {
     const apiUrl = `https://api.sportradar.com/nfl/official/trial/v7/en/games/current_week/schedule.json?api_key=${process.env.NFL_API_KEY}`;
     const response = await fetch(apiUrl);
+    const data = await response.json(); // Parse JSON response
 
-    const weekData = response.data.week;
+    // Check if week data exists
+    const weekData = data.week;
+    if (!weekData) {
+      console.error("Week data not found in response");
+      return res.status(500).json({ message: "Week data not found" });
+    }
+
     const { sequence, title } = weekData;
-    const { year, type } = response.data;
+    const { year, type } = data;
 
     // Save or update the current week in MongoDB
     await CurrentWeek.findOneAndUpdate(
@@ -16,7 +22,7 @@ const getCurrentWeekSchedule = async (req, res) => {
       { sequence, title, year, type },
       { upsert: true, new: true }
     );
-    res.json(response.data);
+    res.json(data);
   } catch (error) {
     console.error("Error fetching current week schedule:", error);
     res.status(500).json({ message: "Error fetching current week schedule" });
@@ -43,9 +49,10 @@ const getNextWeekSchedule = async (req, res) => {
 
     // Fetch the next week's schedule from Sportradar
     const response = await fetch(apiUrl);
+    const nextWeekData = await response.json();
 
     // Return the data for the next week
-    res.json(response.data);
+    res.json(nextWeekData);
   } catch (error) {
     console.error("Error fetching next week schedule:", error);
     res.status(500).json({ message: "Error fetching next week schedule" });
