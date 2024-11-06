@@ -26,4 +26,6 @@ const getTeamInjuries = async (req, res) => {
   }
 };
 
+//test
+
 module.exports = { getTeamInjuries };
