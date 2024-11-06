@@ -1,6 +1,5 @@
 const cron = require("node-cron");
 const axios = require("axios");
-const mongoose = require("mongoose");
 const CurrentWeek = require("../models/CurrentWeek"); // Import the model for the current week
 
 cron.schedule(

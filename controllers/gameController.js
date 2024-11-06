@@ -1,4 +1,4 @@
-const CurrentWeek = require("../models/CurrentWeek");
+const connectToDatabase = require("../db/conn"); // Import the database connection function
 
 const getCurrentWeekSchedule = async (req, res) => {
   try {
@@ -16,12 +16,16 @@ const getCurrentWeekSchedule = async (req, res) => {
     const { sequence, title } = weekData;
     const { year, type } = data;
 
-    // Save or update the current week in MongoDB
-    await CurrentWeek.findOneAndUpdate(
-      {},
-      { sequence, title, year, type },
-      { upsert: true, new: true }
+    // Get the db connection
+    const db = await connectToDatabase();
+    const collection = db.collection("currentweeks");
+
+    await collection.updateOne(
+      {}, // Update the first document it finds
+      { $set: { sequence, title, year, type } },
+      { upsert: true } // Create the document if it doesn't exist
     );
+
     res.json(data);
   } catch (error) {
     console.error("Error fetching current week schedule:", error);
@@ -31,8 +35,11 @@ const getCurrentWeekSchedule = async (req, res) => {
 
 const getNextWeekSchedule = async (req, res) => {
   try {
-    // Retrieve the current week from MongoDB
-    const currentWeekData = await CurrentWeek.findOne();
+    // Get the db connection
+    const db = await connectToDatabase();
+    const collection = db.collection("currentweeks");
+    const currentWeekData = await collection.findOne({});
+
     if (!currentWeekData || !currentWeekData.sequence) {
       return res.status(404).json({ message: "Current week data not found" });
     }

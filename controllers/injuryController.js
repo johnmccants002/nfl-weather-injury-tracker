@@ -1,13 +1,18 @@
-const Injury = require("../models/Injury"); // Make sure this path is correct for your Injury model
+const connectToDatabase = require("../db/conn"); // Import the database connection function
 
 const getTeamInjuries = async (req, res) => {
   try {
     const { team } = req.params; // Get the team param from the request URL
     console.log("THIS IS THE TEAM", team);
 
+    // Connect to the database
+    const db = await connectToDatabase();
+    const collection = db.collection("injuries");
+
     // Query MongoDB for injuries associated with the specified team
-    const injuries = await Injury.find({ teamName: team }); // Adjust this path if needed based on your schema
+    const injuries = await collection.find({ teamName: team }).toArray();
     console.log("HERE ARE THE INJURIES: ", injuries);
+
     if (injuries.length === 0) {
       return res
         .status(404)
